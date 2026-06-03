@@ -1,0 +1,18 @@
+All frontend files have been written. Here is a summary of what was built:
+
+1. **HTML Templates:**
+   - `base.html`: Base template with navigation and main content block.
+   - `dashboard.html`: Dashboard page for logged-in users, displaying tasks and providing options to create, complete, or delete tasks.
+   - `login.html`: Login form for user authentication.
+   - `register.html`: Registration form for new users.
+   - `create_task.html`: Form for creating a new task.
+   - `complete_task.html`: Confirmation page after completing a task.
+   - `delete_task.html`: Confirmation page after deleting a task.
+
+2. **Stylesheets:**
+   - `styles.css`: Basic styling for the application, including dark mode and glassmorphism effects.
+
+3. **JavaScript Files:**
+   - `script.js`: Placeholder file for any client-side JavaScript code that might be needed in the future.
+
+These files are organized under the `templates/` folder for HTML templates and the `static/` folder for stylesheets and scripts.

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>List Transactions</h1>
+    <form action="/list_transactions" method="post">
+        <input type="text" name="date_range" placeholder="Date Range (YYYY-MM-DD to YYYY-MM-DD)">
+        <button type="submit">Filter</button>
+    </form>
+
+    <ul>
+        {% for transaction in transactions %}
+            <li>{{ transaction.date }} - {{ transaction.amount }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

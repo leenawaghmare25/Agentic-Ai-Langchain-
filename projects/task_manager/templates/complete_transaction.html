@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Complete Transaction</h1>
+    <p>{{ transaction.date }} - {{ transaction.amount }}</p>
+    <form action="/complete_transaction/{{ transaction.id }}" method="post">
+        <button type="submit">Confirm Completion</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neumorphic Glass Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script defer src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body>
+    <div class="background-animation">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+    </div>
+    
+    <div class="calculator-container">
+        <div class="calculator-card">
+            <div class="calculator-header">
+                <h2>NEO-CALC</h2>
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Backend Connected</span>
+                </div>
+            </div>
+            
+            <div class="display-screen">
+                <div id="expression" class="expression-display"></div>
+                <div id="result" class="result-display">0</div>
+            </div>
+            
+            <div class="buttons-grid">
+                <button class="btn btn-action" data-action="clear">C</button>
+                <button class="btn btn-action" data-action="backspace">⌫</button>
+                <button class="btn btn-operator" data-val="(">(</button>
+                <button class="btn btn-operator" data-val=")">)</button>
+                
+                <button class="btn btn-number" data-val="7">7</button>
+                <button class="btn btn-number" data-val="8">8</button>
+                <button class="btn btn-number" data-val="9">9</button>
+                <button class="btn btn-operator" data-val="/">÷</button>
+                
+                <button class="btn btn-number" data-val="4">4</button>
+                <button class="btn btn-number" data-val="5">5</button>
+                <button class="btn btn-number" data-val="6">6</button>
+                <button class="btn btn-operator" data-val="*">×</button>
+                
+                <button class="btn btn-number" data-val="1">1</button>
+                <button class="btn btn-number" data-val="2">2</button>
+                <button class="btn btn-number" data-val="3">3</button>
+                <button class="btn btn-operator" data-val="-">−</button>
+                
+                <button class="btn btn-number btn-zero" data-val="0">0</button>
+                <button class="btn btn-number" data-val=".">.</button>
+                <button class="btn btn-operator" data-val="+">+</button>
+                <button class="btn btn-equals" data-action="calculate">=</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

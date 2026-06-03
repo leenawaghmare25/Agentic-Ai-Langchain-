@@ -1,0 +1,12 @@
+# Global Developer Preferences & Technical Constraints
+
+1. Always use a modern, sleek dark mode theme (background #121212, text #e0e0e0).
+2. Use glassmorphism effects for cards, modals, and navigation bars (rgba(255, 255, 255, 0.05) with backdrop-filter blur).
+3. Ensure the UI feels highly interactive with smooth CSS hover animations and transitions.
+4. Use modern Google Fonts like 'Inter'. The design should feel premium.
+5. CRITICAL BACKEND RULE: Always use modern Flask syntax. Do NOT use @app.before_first_request to initialize databases or create tables. You MUST use the `with app.app_context(): db.create_all()` pattern instead.
+6. ALWAYS include the standard python execution block at the bottom of the main app.py file: 
+```python
+if __name__ == "__main__": 
+    app.run(debug=True)
+```

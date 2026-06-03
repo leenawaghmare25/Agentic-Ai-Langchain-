@@ -1,0 +1,266 @@
+:root {
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    --card-bg: rgba(15, 23, 42, 0.45);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --glow-color: rgba(99, 102, 241, 0.15);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --btn-bg: rgba(255, 255, 255, 0.03);
+    --btn-border: rgba(255, 255, 255, 0.05);
+    --btn-hover: rgba(255, 255, 255, 0.08);
+    --btn-active: rgba(255, 255, 255, 0.12);
+    --accent-color: #6366f1;
+    --accent-hover: #4f46e5;
+    --accent-glow: rgba(99, 102, 241, 0.4);
+    --danger-color: #f43f5e;
+    --danger-hover: #e11d48;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+    user-select: none;
+}
+
+body {
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Background animated glow circles */
+.background-animation {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+}
+
+.circle-1 {
+    width: 300px;
+    height: 300px;
+    background: #6366f1;
+    top: 15%;
+    left: 20%;
+    animation: float1 15s ease-in-out infinite alternate;
+}
+
+.circle-2 {
+    width: 400px;
+    height: 400px;
+    background: #a855f7;
+    bottom: 15%;
+    right: 20%;
+    animation: float2 18s ease-in-out infinite alternate;
+}
+
+@keyframes float1 {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(50px, 40px) scale(1.1); }
+}
+
+@keyframes float2 {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-60px, -50px) scale(1.15); }
+}
+
+/* Container & Card */
+.calculator-container {
+    z-index: 10;
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.calculator-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 
+                0 0 50px var(--glow-color),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.calculator-card:hover {
+    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.35), 
+                0 0 60px rgba(99, 102, 241, 0.22),
+                inset 0 1px 1px rgba(255, 255, 255, 0.15);
+}
+
+/* Header */
+.calculator-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.calculator-header h2 {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--text-secondary);
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--btn-border);
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    background: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #10b981;
+}
+
+.status-text {
+    font-size: 10px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Display Screen */
+.display-screen {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+    text-align: right;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.expression-display {
+    font-size: 16px;
+    color: var(--text-secondary);
+    min-height: 24px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+}
+
+.result-display {
+    font-size: 38px;
+    color: var(--text-primary);
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    transition: all 0.15s ease;
+}
+
+/* Grid layout */
+.buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+/* Buttons Styling */
+.btn {
+    border: 1px solid var(--btn-border);
+    background: var(--btn-bg);
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: 500;
+    height: 60px;
+    border-radius: 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    outline: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn:hover {
+    background: var(--btn-hover);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    background: var(--btn-active);
+    transform: scale(0.96) translateY(0);
+}
+
+.btn-action {
+    color: var(--danger-color);
+}
+
+.btn-action:hover {
+    background: rgba(244, 63, 94, 0.08);
+    border-color: rgba(244, 63, 94, 0.2);
+}
+
+.btn-operator {
+    color: var(--accent-color);
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.btn-operator:hover {
+    background: rgba(99, 102, 241, 0.08);
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+.btn-zero {
+    grid-column: span 1;
+}
+
+.btn-equals {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.btn-equals:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    box-shadow: 0 6px 16px var(--accent-glow);
+    transform: translateY(-2px);
+}
+
+.btn-equals:active {
+    transform: scale(0.96) translateY(0);
+}
+
+/* Error state style */
+.text-error {
+    color: var(--danger-color) !important;
+    font-size: 24px !important;
+}

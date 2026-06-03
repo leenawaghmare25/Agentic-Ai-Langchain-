@@ -1,0 +1,43 @@
+/* Basic styling for the application, including dark mode and glassmorphism effects */
+
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+}
+
+.container {
+    padding: 20px;
+}
+
+.task-item {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.task-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.task-completed {
+    text-decoration: line-through;
+}
+
+.button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button-primary {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.button-primary:hover {
+    background-color: #0056b3;
+}

@@ -1,0 +1,75 @@
+Based on the provided requirements and roadmap, I will outline the architecture for the Task Management System.
+
+**Backend Architecture**
+
+1. **Flask Framework**: Use Flask as the backend framework to handle user requests and interact with the database.
+2. **Flask-SQLAlchemy**: Use Flask-SQLAlchemy to interact with the SQLite database and perform CRUD operations.
+3. **Flask-Login**: Use Flask-Login to handle user authentication and session management.
+4. **Flask-WTF**: Use Flask-WTF to handle form data and validate user input.
+5. **Bcrypt**: Use Bcrypt to hash user passwords securely.
+
+**Database Schema**
+
+1. **Users Table**: Create a table to store user information, including:
+	* `id` (primary key)
+	* `username`
+	* `email`
+	* `password` (hashed)
+2. **Tasks Table**: Create a table to store task information, including:
+	* `id` (primary key)
+	* `name`
+	* `description`
+	* `completion_status`
+	* `user_id` (foreign key referencing the Users table)
+
+**Frontend Architecture**
+
+1. **Bootstrap**: Use Bootstrap as the frontend framework to implement the dark mode theme and glassmorphism effects.
+2. **CSS**: Use CSS to style the application and implement smooth micro-animations on buttons and other interactive elements.
+3. **Inter Font**: Use the Inter font to style the application.
+
+**API Endpoints**
+
+1. **User Registration**: Create a POST endpoint to handle user registration, including:
+	* `username`
+	* `email`
+	* `password`
+2. **User Login**: Create a POST endpoint to handle user login, including:
+	* `username`
+	* `password`
+3. **Task Creation**: Create a POST endpoint to handle task creation, including:
+	* `name`
+	* `description`
+4. **Task Viewing**: Create a GET endpoint to retrieve tasks for a specific user.
+5. **Task Completion**: Create a PUT endpoint to update task completion status.
+6. **Task Deletion**: Create a DELETE endpoint to delete tasks.
+
+**Module Structure**
+
+1. **app**: The main application module, containing the Flask app instance and configuration.
+2. **models**: The module containing the database models, including the Users and Tasks tables.
+3. **forms**: The module containing the form classes for user registration, user login, and task creation.
+4. **routes**: The module containing the API endpoints for user registration, user login, task creation, task viewing, task completion, and task deletion.
+5. **templates**: The module containing the HTML templates for the application.
+6. **static**: The module containing the static files, including CSS and JavaScript files.
+
+**File Layout**
+
+1. **app.py**: The main application file, containing the Flask app instance and configuration.
+2. **models.py**: The file containing the database models, including the Users and Tasks tables.
+3. **forms.py**: The file containing the form classes for user registration, user login, and task creation.
+4. **routes.py**: The file containing the API endpoints for user registration, user login, task creation, task viewing, task completion, and task deletion.
+5. **templates**: The directory containing the HTML templates for the application.
+6. **static**: The directory containing the static files, including CSS and JavaScript files.
+
+**Security**
+
+1. **Password Hashing**: Use Bcrypt to hash user passwords securely.
+2. **SQL Injection Protection**: Use Flask-SQLAlchemy to protect against SQL injection attacks.
+3. **Cross-Site Scripting (XSS) Protection**: Use Flask to protect against XSS attacks.
+
+**Testing**
+
+1. **Unit Tests**: Write unit tests for the application using a testing framework like Pytest.
+2. **Integration Tests**: Write integration tests for the application using a testing framework like Pytest.
+3. **Test Coverage**: Ensure that the application has high test coverage, including tests for user registration, user login, task creation, task viewing, task completion, and task deletion.

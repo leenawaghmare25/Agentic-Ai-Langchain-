@@ -1,0 +1,4 @@
+<li class="task-item {{ 'task-completed' if task.completed else '' }}">
+    <span>{{ task.content }}</span>
+    <button type="button" class="button button-primary" onclick="deleteTask({{ task.id }})">Delete</button>
+</li>

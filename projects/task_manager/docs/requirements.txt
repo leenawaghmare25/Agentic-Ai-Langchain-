@@ -1,0 +1,38 @@
+**Detected Requirements**
+
+1. **Task Management System**: A full-stack application using Flask that allows users to manage tasks.
+2. **User Authentication**: A system for users to register and log in.
+3. **Task Management Features**:
+	* Create new tasks.
+	* View tasks.
+	* Mark tasks as complete.
+	* Delete tasks.
+4. **Database**: Use a local SQLite database to store users and tasks.
+5. **Design Requirements**:
+	* Premium and modern design.
+	* Dark mode theme.
+	* Glassmorphism effects.
+	* Smooth micro-animations on buttons.
+	* Use the Inter font.
+6. **Security**:
+	* Securely hash user passwords before saving them to the database.
+
+**Assumed Defaults**
+
+1. **Frontend Framework**: Use a modern frontend framework like Bootstrap or Material-UI to implement the design requirements.
+2. **Password Hashing Algorithm**: Use a secure password hashing algorithm like bcrypt or Argon2 to hash user passwords.
+3. **Database Schema**: Design a simple database schema with two tables: users and tasks.
+4. **Routing**: Use Flask's built-in routing system to handle user requests.
+5. **HTML Templates**: Use a templating engine like Jinja2 to generate HTML templates for the application.
+
+**Suggested Improvements**
+
+1. **Implement User Roles**: Consider implementing user roles to provide different levels of access to the application.
+2. **Add Task Prioritization**: Allow users to prioritize tasks to help them manage their workload more effectively.
+3. **Integrate Calendar View**: Integrate a calendar view to display tasks due on a specific date.
+4. **Implement Search Functionality**: Add a search bar to allow users to quickly find specific tasks.
+5. **Use a More Secure Database**: Consider using a more secure database like PostgreSQL or MySQL instead of SQLite.
+
+**Clarification Questions**
+
+None - Requirements Finalized
