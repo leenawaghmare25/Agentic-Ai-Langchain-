@@ -1,9 +1,0 @@
-{% extends "base.html" %}
-{% block content %}
-    <h1>Transaction History</h1>
-    <ul>
-        {% for transaction in transactions %}
-            <li>{{ transaction.date }} - {{ transaction.amount }}</li>
-        {% endfor %}
-    </ul>
-{% endblock %}
