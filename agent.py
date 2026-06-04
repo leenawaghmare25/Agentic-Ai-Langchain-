@@ -68,63 +68,63 @@ CURRENT_PROJECT_DIR = WORKSPACE_DIR
 # Define the target remote GitHub repository URL
 REMOTE_GIT_URL = "https://github.com/leenawaghmare25/Agentic-Ai-Langchain-.git"
 
-def initialize_git_repo():
+def initialize_git_repo(): # Define function initialize_git_repo to set up a git repository in our workspace
     """Initializes a git repository in the root workspace directory and configures the remote origin."""
-    try:
-        git_dir = os.path.join(WORKSPACE_DIR, ".git")
+    try: # Start try block to handle any errors during git initialization
+        git_dir = os.path.join(WORKSPACE_DIR, ".git") # Construct the absolute path to the local .git directory
         # Ensure workspace root exists
-        os.makedirs(WORKSPACE_DIR, exist_ok=True)
+        os.makedirs(WORKSPACE_DIR, exist_ok=True) # Create the workspace directory if it doesn't already exist on disk
         
         # Check if root .git exists; if not, initialize it
-        if not os.path.exists(git_dir):
-            print(Fore.YELLOW + f"\n[Git Integration] Initializing Git repository in root: {WORKSPACE_DIR}..." + Fore.RESET)
-            subprocess.run(["git", "init"], cwd=WORKSPACE_DIR, capture_output=True, check=True)
+        if not os.path.exists(git_dir): # If the .git directory does not exist yet
+            print(Fore.YELLOW + f"\n[Git Integration] Initializing Git repository in root: {WORKSPACE_DIR}..." + Fore.RESET) # Print initialization start message to console in yellow
+            subprocess.run(["git", "init"], cwd=WORKSPACE_DIR, capture_output=True, check=True) # Run git init command in the workspace directory and check for errors
             
         # Write default root .gitignore if not present
-        gitignore_path = os.path.join(WORKSPACE_DIR, ".gitignore")
-        if not os.path.exists(gitignore_path):
-            with open(gitignore_path, "w", encoding="utf-8") as f:
-                f.write("__pycache__/\n*.py[cod]\n.env\nmyenv/\n")
-            print(Fore.GREEN + "[Git Integration] Created default root .gitignore file." + Fore.RESET)
+        gitignore_path = os.path.join(WORKSPACE_DIR, ".gitignore") # Construct the path to the workspace .gitignore file
+        if not os.path.exists(gitignore_path): # If the .gitignore file does not exist yet
+            with open(gitignore_path, "w", encoding="utf-8") as f: # Open the gitignore file in write-text mode with UTF-8 encoding
+                f.write("__pycache__/\n*.py[cod]\n.env\nmyenv/\n") # Write list of temporary cache files and environment files to ignore in Git
+            print(Fore.GREEN + "[Git Integration] Created default root .gitignore file." + Fore.RESET) # Print ignore file creation message to console in green
             
         # Dynamically verify and bind remote origin
-        print(Fore.YELLOW + f"[Git Integration] Configuring remote origin to: {REMOTE_GIT_URL}" + Fore.RESET)
-        subprocess.run(["git", "remote", "remove", "origin"], cwd=WORKSPACE_DIR, capture_output=True)
-        subprocess.run(["git", "remote", "add", "origin", REMOTE_GIT_URL], cwd=WORKSPACE_DIR, capture_output=True, check=True)
-    except Exception as e:
-        print(Fore.RED + f"\n[Git Integration Error] Failed to initialize Git repo: {str(e)}" + Fore.RESET)
+        print(Fore.YELLOW + f"[Git Integration] Configuring remote origin to: {REMOTE_GIT_URL}" + Fore.RESET) # Print origin configuration message in yellow
+        subprocess.run(["git", "remote", "remove", "origin"], cwd=WORKSPACE_DIR, capture_output=True) # Remove any existing remote origin configuration in this repository
+        subprocess.run(["git", "remote", "add", "origin", REMOTE_GIT_URL], cwd=WORKSPACE_DIR, capture_output=True, check=True) # Add the target REMOTE_GIT_URL as the new remote origin repository
+    except Exception as e: # Catch any filesystem or command line exceptions
+        print(Fore.RED + f"\n[Git Integration Error] Failed to initialize Git repo: {str(e)}" + Fore.RESET) # Print error message to console in red
 
-def handle_git_push_workflow(project_name: str):
+def handle_git_push_workflow(project_name: str): # Define function handle_git_push_workflow that stages, commits, and pushes updates
     """Checks for changes in the workspace. If changes exist, stages, commits, and pushes them to GitHub."""
-    try:
-        git_dir = os.path.join(WORKSPACE_DIR, ".git")
-        if not os.path.exists(git_dir):
-            print(Fore.RED + "\n[Git Integration Error] Git is not initialized at the root level." + Fore.RESET)
-            return
-
+    try: # Start try block to handle any errors during git commit/push
+        git_dir = os.path.join(WORKSPACE_DIR, ".git") # Construct the absolute path to the local .git directory
+        if not os.path.exists(git_dir): # If git has not been initialized in the workspace yet
+            print(Fore.RED + "\n[Git Integration Error] Git is not initialized at the root level." + Fore.RESET) # Print warning message in red to console
+            return # Exit the function early since we cannot run git commands
+ 
         # Check for untracked or modified files in the workspace (using git status --porcelain)
-        status_check = subprocess.run(["git", "status", "--porcelain"], cwd=WORKSPACE_DIR, capture_output=True, text=True, check=True)
-        changes = status_check.stdout.strip()
+        status_check = subprocess.run(["git", "status", "--porcelain"], cwd=WORKSPACE_DIR, capture_output=True, text=True, check=True) # Run git status --porcelain to check for modified files
+        changes = status_check.stdout.strip() # Read the command output and strip whitespace to see if there are actual changes
         
-        if changes:
-            print(Fore.YELLOW + "\n[Git Integration] Changes detected in workspace. Staging and committing..." + Fore.RESET)
+        if changes: # If there are untracked or modified files in the workspace
+            print(Fore.YELLOW + "\n[Git Integration] Changes detected in workspace. Staging and committing..." + Fore.RESET) # Print changes detected message in yellow
             # Stage all changes
-            subprocess.run(["git", "add", "."], cwd=WORKSPACE_DIR, capture_output=True, check=True)
+            subprocess.run(["git", "add", "."], cwd=WORKSPACE_DIR, capture_output=True, check=True) # Run git add . to stage all new and modified files
             # Commit changes
-            commit_msg = f"Auto-generated project update: {project_name}"
-            subprocess.run(["git", "commit", "-m", commit_msg], cwd=WORKSPACE_DIR, capture_output=True, check=True)
-            print(Fore.GREEN + f"[Git Integration] Successfully created commit: '{commit_msg}'" + Fore.RESET)
+            commit_msg = f"Auto-generated project update: {project_name}" # Formulate commit message with the dynamic project name
+            subprocess.run(["git", "commit", "-m", commit_msg], cwd=WORKSPACE_DIR, capture_output=True, check=True) # Run git commit command with the message and check for errors
+            print(Fore.GREEN + f"[Git Integration] Successfully created commit: '{commit_msg}'" + Fore.RESET) # Print commit success message in green
             
             # Push changes to main branch
-            print(Fore.YELLOW + "[Git Integration] Pushing updates to GitHub..." + Fore.RESET)
-            subprocess.run(["git", "branch", "-M", "main"], cwd=WORKSPACE_DIR, capture_output=True, check=True)
-            subprocess.run(["git", "push", "-u", "origin", "main"], cwd=WORKSPACE_DIR, capture_output=True, check=True)
-            print(Fore.GREEN + "[Git Integration] Successfully pushed updates to remote GitHub repository!" + Fore.RESET)
-        else:
-            print(Fore.GREEN + "\n[Git Integration] No changes detected in workspace. Skipping Git commit and push." + Fore.RESET)
+            print(Fore.YELLOW + "[Git Integration] Pushing updates to GitHub..." + Fore.RESET) # Print push start message to console in yellow
+            subprocess.run(["git", "branch", "-M", "main"], cwd=WORKSPACE_DIR, capture_output=True, check=True) # Rename the active branch to main to ensure standard push branch name
+            subprocess.run(["git", "push", "-u", "origin", "main"], cwd=WORKSPACE_DIR, capture_output=True, check=True) # Run git push command to send main branch to remote origin
+            print(Fore.GREEN + "[Git Integration] Successfully pushed updates to remote GitHub repository!" + Fore.RESET) # Print push success message in green
+        else: # If git status output is empty (no changes exist)
+            print(Fore.GREEN + "\n[Git Integration] No changes detected in workspace. Skipping Git commit and push." + Fore.RESET) # Print skip message to console in green
             
-    except Exception as e:
-        print(Fore.RED + f"\n[Git Integration Error] Failed to complete Git push workflow: {str(e)}" + Fore.RESET)
+    except Exception as e: # Catch any command or connection errors during git operations
+        print(Fore.RED + f"\n[Git Integration Error] Failed to complete Git push workflow: {str(e)}" + Fore.RESET) # Print push error message to console in red
 
 def clean_json_candidate(candidate: str) -> str:
     """Preprocesses a JSON candidate string to resolve common syntax errors like backticks wrapping multi-line content."""
