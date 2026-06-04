@@ -631,53 +631,53 @@ AGENT_LLM_CONFIG = {
     "Maintenance QA": "Ollama_7b"
 }
 
-def get_model_for_agent(agent_name: str) -> str:
+def get_model_for_agent(agent_name: str) -> str: # Define a helper function to get the model details for a specific agent name
     """Returns the descriptive provider and model name configured for an agent."""
-    provider = AGENT_LLM_CONFIG.get(agent_name, "Ollama")
-    provider_lower = provider.lower().strip()
-    if provider_lower == "ollama" or provider_lower == "ollama_1.5b":
-        return "Ollama [qwen2.5-coder:1.5b]"
-    elif provider_lower == "ollama_7b":
-        return "Ollama [qwen2.5-coder:7b]"
-    elif provider_lower == "groq":
-        return "Groq [llama-3.1-8b-instant]"
-    elif provider_lower == "gemini":
-        return "Gemini [gemini-2.5-flash]"
-    return provider
+    provider = AGENT_LLM_CONFIG.get(agent_name, "Ollama") # Look up the agent name in our AGENT_LLM_CONFIG dictionary, default to "Ollama" if not found
+    provider_lower = provider.lower().strip() # Convert the provider name to lowercase and remove any leading or trailing whitespace
+    if provider_lower == "ollama" or provider_lower == "ollama_1.5b": # If the provider is Ollama 1.5B (the smaller local model)
+        return "Ollama [qwen2.5-coder:1.5b]" # Return the descriptive model string for Ollama 1.5B
+    elif provider_lower == "ollama_7b": # If the provider is Ollama 7B (the larger local developer model)
+        return "Ollama [qwen2.5-coder:7b]" # Return the descriptive model string for Ollama 7B
+    elif provider_lower == "groq": # If the provider is Groq (cloud provider using Llama)
+        return "Groq [llama-3.1-8b-instant]" # Return the descriptive model string for Groq
+    elif provider_lower == "gemini": # If the provider is Gemini (Google cloud provider)
+        return "Gemini [gemini-2.5-flash]" # Return the descriptive model string for Gemini
+    return provider # If it didn't match any of the above, just return the raw provider string configured
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", os.getenv("GOOGLE_API_KEY", ""))
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "") # Retrieve the Groq API key from environment variables
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", os.getenv("GOOGLE_API_KEY", "")) # Retrieve the Gemini API key from environment variables (checking both GEMINI_API_KEY and GOOGLE_API_KEY)
 
-def create_llm_client(provider: str):
+def create_llm_client(provider: str): # Define a factory function to construct and return a LangChain LLM client
     """Factory to create a LangChain LLM client based on the provider name."""
-    provider_lower = provider.lower().strip()
-    if provider_lower == "ollama" or provider_lower == "ollama_1.5b":
-        return ChatOllama(
-            model="qwen2.5-coder:1.5b",
-            temperature=0
+    provider_lower = provider.lower().strip() # Convert the provider string to lowercase and strip whitespace
+    if provider_lower == "ollama" or provider_lower == "ollama_1.5b": # If provider matches Ollama or Ollama 1.5B
+        return ChatOllama( # Create and return a local ChatOllama client instance
+            model="qwen2.5-coder:1.5b", # Set the target model to the Qwen 2.5 Coder 1.5B model
+            temperature=0 # Set temperature to 0 for deterministic and consistent output
         )
-    elif provider_lower == "ollama_7b":
-        return ChatOllama(
-            model="qwen2.5-coder:7b",
-            temperature=0
+    elif provider_lower == "ollama_7b": # If provider matches Ollama 7B
+        return ChatOllama( # Create and return a local ChatOllama client instance
+            model="qwen2.5-coder:7b", # Set the target model to the Qwen 2.5 Coder 7B model
+            temperature=0 # Set temperature to 0 for deterministic and consistent output
         )
-    elif provider_lower == "groq":
-        return ChatGroq(
-            model="llama-3.1-8b-instant",
-            api_key=GROQ_API_KEY,
-            temperature=0
+    elif provider_lower == "groq": # If provider matches Groq
+        return ChatGroq( # Create and return a cloud ChatGroq client instance
+            model="llama-3.1-8b-instant", # Set the target model to Llama 3.1 8B Instant on Groq
+            api_key=GROQ_API_KEY, # Pass the Groq API key retrieved from the environment
+            temperature=0 # Set temperature to 0 for deterministic output
         )
-    elif provider_lower == "gemini":
-        if not GEMINI_API_KEY:
-            print(Fore.YELLOW + "\n⚠️  [System Warning] Gemini API key is missing. Falling back to Groq for this agent..." + Fore.RESET)
-            return create_llm_client("groq")
-        return ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
-            google_api_key=GEMINI_API_KEY,
-            temperature=0
+    elif provider_lower == "gemini": # If provider matches Gemini
+        if not GEMINI_API_KEY: # Check if the Gemini API key is empty or missing
+            print(Fore.YELLOW + "\n⚠️  [System Warning] Gemini API key is missing. Falling back to Groq for this agent..." + Fore.RESET) # Print a warning message to the console in yellow color
+            return create_llm_client("groq") # Recursively call create_llm_client with "groq" as a fallback
+        return ChatGoogleGenerativeAI( # Create and return a cloud Gemini client instance
+            model="gemini-2.5-flash", # Set the target model to Gemini 2.5 Flash
+            google_api_key=GEMINI_API_KEY, # Pass the Google API key retrieved from the environment
+            temperature=0 # Set temperature to 0 for deterministic output
         )
-    else:
-        raise ValueError(f"Unknown LLM provider: {provider}")
+    else: # If the provider is not recognized
+        raise ValueError(f"Unknown LLM provider: {provider}") # Raise a ValueError exception indicating the unknown provider
 
 # Keep a default global llm client for backwards compatibility/greetings (Ollama fallback)
 try:
@@ -727,88 +727,88 @@ def parse_failed_generation(failed_gen: str) -> dict:
         pass
     return None
 
-def invoke_agent_with_fallback(agent_name: str, messages: list, tools: list = None):
+def invoke_agent_with_fallback(agent_name: str, messages: list, tools: list = None): # Define function invoke_agent_with_fallback that takes agent_name, messages, and optional tools list
     """Invokes the assigned LLM for an agent, catching rate limits/errors with an automated fallback ladder."""
-    provider = AGENT_LLM_CONFIG.get(agent_name, "Ollama")
+    provider = AGENT_LLM_CONFIG.get(agent_name, "Ollama") # Retrieve the configured LLM provider for the agent, defaulting to "Ollama"
     
-    if OFFLINE_MODE and provider.lower().strip() not in ["ollama_1.5b", "ollama", "ollama_7b"]:
-        print(Fore.YELLOW + f"   [Offline Mode] Forcing '{agent_name}' to Local Qwen 7B." + Fore.RESET)
-        provider = "Ollama_7b"
+    if OFFLINE_MODE and provider.lower().strip() not in ["ollama_1.5b", "ollama", "ollama_7b"]: # Check if offline mode is active and if the provider is not a local Ollama model
+        print(Fore.YELLOW + f"   [Offline Mode] Forcing '{agent_name}' to Local Qwen 7B." + Fore.RESET) # Print a warning to the console that the agent is being forced to local Qwen 7B
+        provider = "Ollama_7b" # Override the provider setting to "Ollama_7b"
         
-    fallback_ladder = ["Gemini", "Groq", "Ollama_7b", "Ollama_1.5b"]
-    if OFFLINE_MODE:
-        fallback_ladder = ["Ollama_7b", "Ollama_1.5b"]
+    fallback_ladder = ["Gemini", "Groq", "Ollama_7b", "Ollama_1.5b"] # Define the ordered list of LLM providers to try in sequence when errors occur
+    if OFFLINE_MODE: # Check if offline mode is active
+        fallback_ladder = ["Ollama_7b", "Ollama_1.5b"] # Restrict the fallback list to only include local Ollama models
         
-    retries_for_current_provider = 0
-    max_retries = 2
+    retries_for_current_provider = 0 # Initialize the retry count for the active LLM provider to zero
+    max_retries = 2 # Define the maximum number of retry attempts allowed per provider
     
-    while True:
-        try:
-            print(Fore.WHITE + Style.DIM + f"   [LLM Provider: {provider}]" + Fore.RESET)
-            client = create_llm_client(provider)
-            if tools:
-                client = client.bind_tools(tools)
+    while True: # Start an infinite loop to handle LLM invocation and catch exceptions
+        try: # Start a try block to attempt LLM call
+            print(Fore.WHITE + Style.DIM + f"   [LLM Provider: {provider}]" + Fore.RESET) # Print the active LLM provider to the console in dim white color
+            client = create_llm_client(provider) # Create the LangChain LLM client using the current provider name
+            if tools: # Check if a list of tools was passed to the function
+                client = client.bind_tools(tools) # Bind the list of tools to the LLM client so it can perform function calling
             
             # Perform invocation
-            return client.invoke(messages)
+            return client.invoke(messages) # Invoke the LLM client with the conversation messages and return the result
             
-        except Exception as e:
-            err_msg = str(e)
+        except Exception as e: # Catch any exception raised during model invocation
+            err_msg = str(e) # Convert the exception object to a string representation
             
             # Extract failed_generation from exception message or response if available
-            failed_gen = None
-            if hasattr(e, 'body') and isinstance(e.body, dict):
-                failed_gen = e.body.get('error', {}).get('failed_generation')
-            elif hasattr(e, 'response') and hasattr(e.response, 'json'):
-                try:
-                    failed_gen = e.response.json().get('error', {}).get('failed_generation')
-                except Exception:
-                    pass
+            failed_gen = None # Initialize the failed_generation variable as None
+            if hasattr(e, 'body') and isinstance(e.body, dict): # Check if the exception object has a body attribute of dictionary type
+                failed_gen = e.body.get('error', {}).get('failed_generation') # Extract the failed_generation value from the error details
+            elif hasattr(e, 'response') and hasattr(e.response, 'json'): # Check if the exception has a response attribute with a json method
+                try: # Start a try block to parse JSON response
+                    failed_gen = e.response.json().get('error', {}).get('failed_generation') # Extract failed_generation from the response JSON
+                except Exception: # Catch any JSON parsing exceptions
+                    pass # Ignore parsing exceptions and proceed
             
-            if not failed_gen:
+            if not failed_gen: # Check if failed_gen is still None
                 # Fallback to regex matching in string representation
-                match = re.search(r"['\"]failed_generation['\"]\s*:\s*['\"]([\s\S]*?)['\"]\s*[,}]", err_msg)
-                if match:
-                    failed_gen = match.group(1)
+                match = re.search(r"['\"]failed_generation['\"]\s*:\s*['\"]([\s\S]*?)['\"]\s*[,}]", err_msg) # Search the error message string for a failed_generation key-value pattern
+                if match: # Check if a match was found by the regex
+                    failed_gen = match.group(1) # Extract the matched content group
             
-            if failed_gen:
-                parsed = parse_failed_generation(failed_gen)
-                if parsed:
-                    print(Fore.GREEN + Style.BRIGHT + f"\n🛠️  [System Recovery] Automatically parsed malformed Groq tool call: '{parsed['name']}'" + Fore.RESET)
-                    return AIMessage(
-                        content=f"Recovered and executing tool {parsed['name']}.",
-                        tool_calls=[{
-                            "name": parsed["name"],
-                            "args": parsed["args"],
-                            "id": f"recovered_tool_call_{int(time.time())}"
+            if failed_gen: # Check if a malformed/failed tool call string was successfully extracted
+                parsed = parse_failed_generation(failed_gen) # Parse the raw tool call string into a structured dictionary
+                if parsed: # Check if parsing succeeded
+                    print(Fore.GREEN + Style.BRIGHT + f"\n🛠️  [System Recovery] Automatically parsed malformed Groq tool call: '{parsed['name']}'" + Fore.RESET) # Print a success recovery message to the console in bright green
+                    return AIMessage( # Return a manually constructed AIMessage to LangChain
+                        content=f"Recovered and executing tool {parsed['name']}.", # Set the message text content
+                        tool_calls=[{ # Populate the tool_calls list with the parsed parameters
+                            "name": parsed["name"], # Set the target tool name
+                            "args": parsed["args"], # Set the tool argument values
+                            "id": f"recovered_tool_call_{int(time.time())}" # Generate a unique tool call ID using the current timestamp
                         }]
                     )
             
-            print(Fore.RED + Style.BRIGHT + f"\n⚠️  [{agent_name}] Provider '{provider}' error: {err_msg}" + Fore.RESET)
+            print(Fore.RED + Style.BRIGHT + f"\n⚠️  [{agent_name}] Provider '{provider}' error: {err_msg}" + Fore.RESET) # Print the provider error message to the console in bright red
             
-            if retries_for_current_provider < max_retries:
-                retries_for_current_provider += 1
-                print(Fore.YELLOW + f"   [Auto-Recovery] Retrying provider '{provider}' in 5 seconds (Attempt {retries_for_current_provider}/{max_retries})..." + Fore.RESET)
-                time.sleep(5)
-                continue
+            if retries_for_current_provider < max_retries: # Check if the current provider's retry count is below the maximum limit
+                retries_for_current_provider += 1 # Increment the current provider's retry count by one
+                print(Fore.YELLOW + f"   [Auto-Recovery] Retrying provider '{provider}' in 5 seconds (Attempt {retries_for_current_provider}/{max_retries})..." + Fore.RESET) # Print a retry countdown warning in yellow
+                time.sleep(5) # Pause execution for 5 seconds before retrying
+                continue # Restart the loop iteration to retry the current provider
                 
             # If we exhaust retries, move to next provider in the ladder
-            if provider in fallback_ladder:
-                current_idx = fallback_ladder.index(provider)
-                if current_idx < len(fallback_ladder) - 1:
-                    provider = fallback_ladder[current_idx + 1]
-                    retries_for_current_provider = 0
-                    print(Fore.YELLOW + f"   [Auto-Fallback] Switching '{agent_name}' to {provider}..." + Fore.RESET)
-                    continue
-            elif not OFFLINE_MODE and provider not in fallback_ladder:
+            if provider in fallback_ladder: # Check if the current provider is in the fallback ladder list
+                current_idx = fallback_ladder.index(provider) # Find the position index of the current provider in the ladder list
+                if current_idx < len(fallback_ladder) - 1: # Check if there is another provider after the current one in the list
+                    provider = fallback_ladder[current_idx + 1] # Select the next provider in the ladder list
+                    retries_for_current_provider = 0 # Reset the retry count to zero for the new provider
+                    print(Fore.YELLOW + f"   [Auto-Fallback] Switching '{agent_name}' to {provider}..." + Fore.RESET) # Print a message to the console indicating the fallback switch
+                    continue # Restart the loop iteration to try the new provider
+            elif not OFFLINE_MODE and provider not in fallback_ladder: # Check if offline mode is inactive and the current provider is not in the ladder list
                 # If provider wasn't in ladder but we failed, try joining ladder
-                provider = fallback_ladder[0]
-                retries_for_current_provider = 0
-                print(Fore.YELLOW + f"   [Auto-Fallback] Switching '{agent_name}' to {provider}..." + Fore.RESET)
-                continue
+                provider = fallback_ladder[0] # Fallback to the first provider in the fallback ladder
+                retries_for_current_provider = 0 # Reset the retry count to zero for the new provider
+                print(Fore.YELLOW + f"   [Auto-Fallback] Switching '{agent_name}' to {provider}..." + Fore.RESET) # Print a fallback switch message to the console
+                continue # Restart the loop iteration to try the first ladder provider
                 
-            print(Fore.RED + f"   [Fatal] All fallback options exhausted for '{agent_name}'. Terminating." + Fore.RESET)
-            raise e
+            print(Fore.RED + f"   [Fatal] All fallback options exhausted for '{agent_name}'. Terminating." + Fore.RESET) # Print a fatal error message in red to indicate complete failure
+            raise e # Reraise the exception to stop execution and notify the system
 
 # Put all tools in a list to register them with the agent
 tools = [search_internet, list_files, read_file, write_file]
@@ -860,24 +860,24 @@ def run_agent_cycles(user_input: str, chat_history: list) -> str:
         return response.content
 
     # Initialize pipeline context accumulator and inject persistent memory if available
-    memory_file = os.path.join(WORKSPACE_DIR, ".agent_memory.txt")
-    if os.path.exists(memory_file):
-        with open(memory_file, "r", encoding="utf-8") as mf:
-            memory_contents = mf.read().strip()
-            if memory_contents:
-                print(Fore.CYAN + "🧠 [Memory] Loaded persistent developer preferences." + Fore.RESET)
-                pipeline_context = f"Global Developer Preferences (MUST FOLLOW):\n{memory_contents}\n\nOriginal User Goal: {user_input}\n\n"
-            else:
-                pipeline_context = f"Original User Goal: {user_input}\n\n"
-    else:
-        pipeline_context = f"Original User Goal: {user_input}\n\n"
+    memory_file = os.path.join(WORKSPACE_DIR, ".agent_memory.txt") # Define path to the persistent memory preferences file
+    if os.path.exists(memory_file): # Check if the memory preferences file exists on the disk
+        with open(memory_file, "r", encoding="utf-8") as mf: # Open the memory preferences file in read-only mode using UTF-8 encoding
+            memory_contents = mf.read().strip() # Read the content of the file and strip any leading or trailing whitespace
+            if memory_contents: # Check if the memory preferences content is non-empty
+                print(Fore.CYAN + "🧠 [Memory] Loaded persistent developer preferences." + Fore.RESET) # Print message to console indicating memory loaded
+                pipeline_context = f"Global Developer Preferences (MUST FOLLOW):\n{memory_contents}\n\nOriginal User Goal: {user_input}\n\n" # Start the pipeline context with developer preferences and original user goal
+            else: # If the memory preferences file is empty
+                pipeline_context = f"Original User Goal: {user_input}\n\n" # Start the pipeline context with only the original user goal
+    else: # If the memory preferences file does not exist
+        pipeline_context = f"Original User Goal: {user_input}\n\n" # Initialize the pipeline context with only the original user goal
         
-    llm_with_tools = llm.bind_tools(tools)
+    llm_with_tools = llm.bind_tools(tools) # Bind the workspace tools to the default llm instance
     
     # --- Agent 1: Requirement Analyst ---
-    print(Fore.YELLOW + Style.BRIGHT + f"\n🔍 [Agent 1/8] Requirement Analyst [Model: {get_model_for_agent('Requirement Analyst')}]" + Fore.RESET)
-    messages = [
-        ("system", (
+    print(Fore.YELLOW + Style.BRIGHT + f"\n🔍 [Agent 1/8] Requirement Analyst [Model: {get_model_for_agent('Requirement Analyst')}]" + Fore.RESET) # Print header indicating start of Agent 1 execution
+    messages = [ # Construct the system and human message block for Agent 1
+        ("system", ( # Define the system instructions for the Requirement Analyst
             "You are an expert Requirement Analyst Agent. Your job is to analyze the user's software development goal, "
             "extract core features and constraints, and identify technical assumptions.\n\n"
             "CRITICAL: Do NOT ask technical implementation questions (e.g. how to code CSS or database schemas). "
@@ -888,42 +888,42 @@ def run_agent_cycles(user_input: str, chat_history: list) -> str:
             "- Suggested Improvements\n"
             "- Clarification Questions (Max 2 non-technical questions, or 'None')"
         )),
-        ("human", user_input)
+        ("human", user_input) # Pass the original user input goal as the human message
     ]
-    response = invoke_agent_with_fallback("Requirement Analyst", messages)
-    initial_analyst_output = response.content
-    print(Fore.LIGHTYELLOW_EX + "💡 Output:" + Fore.RESET)
-    print(initial_analyst_output.strip() + "\n")
+    response = invoke_agent_with_fallback("Requirement Analyst", messages) # Invoke the LLM configured for the Requirement Analyst with fallback recovery
+    initial_analyst_output = response.content # Extract the text response content generated by the analyst
+    print(Fore.LIGHTYELLOW_EX + "💡 Output:" + Fore.RESET) # Print log indicator for output
+    print(initial_analyst_output.strip() + "\n") # Print the clean analyst output to console
     
     # --- Human-in-the-Loop Requirement Review & User Confirmation Stage ---
-    user_modifications = []
-    current_analyst_output = initial_analyst_output
+    user_modifications = [] # Initialize an empty list to collect any modifications or answers from the user
+    current_analyst_output = initial_analyst_output # Track the current analyst output (initially set to the first run output)
     
-    while True:
-        print(Fore.GREEN + Style.BRIGHT + "=========================================================" + Fore.RESET)
-        print(Fore.GREEN + Style.BRIGHT + "📋 Requirement Review & User Confirmation" + Fore.RESET)
-        print(Fore.GREEN + Style.BRIGHT + "=========================================================" + Fore.RESET)
-        print("Are these requirements final?")
-        print("Would you like to modify or add anything before development starts?")
-        print(Fore.YELLOW + "Press Enter or type 'yes'/'final' to approve and proceed, or enter your modifications/answers below:" + Fore.RESET)
+    while True: # Start validation loop for human review
+        print(Fore.GREEN + Style.BRIGHT + "=========================================================" + Fore.RESET) # Print boundary line
+        print(Fore.GREEN + Style.BRIGHT + "📋 Requirement Review & User Confirmation" + Fore.RESET) # Print section header
+        print(Fore.GREEN + Style.BRIGHT + "=========================================================" + Fore.RESET) # Print boundary line
+        print("Are these requirements final?") # Display question to the user
+        print("Would you like to modify or add anything before development starts?") # Display modification question to the user
+        print(Fore.YELLOW + "Press Enter or type 'yes'/'final' to approve and proceed, or enter your modifications/answers below:" + Fore.RESET) # Prompt user for input
         
         # Flush standard input to clear any buffered newlines from the initial pasted prompt
-        flush_input()
-        user_feedback = input(Fore.BLUE + Style.BRIGHT + "Feedback: " + Fore.RESET).strip()
+        flush_input() # Flush standard input buffer to prevent skipping the prompt
+        user_feedback = input(Fore.BLUE + Style.BRIGHT + "Feedback: " + Fore.RESET).strip() # Read feedback from console input and strip whitespace
         
-        if not user_feedback or user_feedback.lower() in ["yes", "y", "final", "approve"]:
-            print(Fore.GREEN + Style.BRIGHT + "\nRequirements approved! Resuming pipeline...\n" + Fore.RESET)
-            break
-        elif user_feedback.lower() in ["exit", "quit", "bye"]:
-            print(Fore.GREEN + "\nAssistant: Goodbye!")
-            sys.exit(0)
-        else:
-            user_modifications.append(user_feedback)
-            print(Fore.YELLOW + "\n🔄 Regenerating requirement summary with user feedback..." + Fore.RESET)
+        if not user_feedback or user_feedback.lower() in ["yes", "y", "final", "approve"]: # If user approved or pressed enter
+            print(Fore.GREEN + Style.BRIGHT + "\nRequirements approved! Resuming pipeline...\n" + Fore.RESET) # Print approval message
+            break # Exit the verification loop to proceed to next agent
+        elif user_feedback.lower() in ["exit", "quit", "bye"]: # If user requested to terminate
+            print(Fore.GREEN + "\nAssistant: Goodbye!") # Print farewell message
+            sys.exit(0) # Exit the script execution immediately
+        else: # If user provided constructive feedback or answers
+            user_modifications.append(user_feedback) # Append feedback text to user modifications list
+            print(Fore.YELLOW + "\n🔄 Regenerating requirement summary with user feedback..." + Fore.RESET) # Print regeneration message
             
             # Combine all feedback accumulated so far and re-run the Requirement Analyst
-            feedback_str = "\n".join([f"- {mod}" for mod in user_modifications])
-            messages = [
+            feedback_str = "\n".join([f"- {mod}" for mod in user_modifications]) # Join all user inputs with bullet points
+            messages = [ # Reconstruct message block with accumulated feedback
                 ("system", (
                     "You are an expert Requirement Analyst Agent. Your job is to analyze the user's software development goal, "
                     "incorporating any modifications, specifications, or feedback provided by the user. "
@@ -936,68 +936,68 @@ def run_agent_cycles(user_input: str, chat_history: list) -> str:
                     "- Suggested Improvements\n"
                     "- Clarification Questions (Output 'None - Requirements Finalized')"
                 )),
-                ("human", f"Original User Goal: {user_input}\n\nUser Modifications & Feedback:\n{feedback_str}")
+                ("human", f"Original User Goal: {user_input}\n\nUser Modifications & Feedback:\n{feedback_str}") # Provide user goal along with feedback as human input
             ]
-            response = invoke_agent_with_fallback("Requirement Analyst", messages)
-            current_analyst_output = response.content
-            print(Fore.LIGHTYELLOW_EX + "\n💡 Updated Output:" + Fore.RESET)
-            print(current_analyst_output.strip() + "\n")
+            response = invoke_agent_with_fallback("Requirement Analyst", messages) # Invoke the fallback runner to generate updated requirements
+            current_analyst_output = response.content # Store the updated analysis text content
+            print(Fore.LIGHTYELLOW_EX + "\n💡 Updated Output:" + Fore.RESET) # Print output header
+            print(current_analyst_output.strip() + "\n") # Display the updated analysis text content to the user
             
     # Add requirements summaries and user feedback to the pipeline context
-    pipeline_context += f"--- 1a. Initial Extracted Requirements ---\n{initial_analyst_output}\n\n"
-    if user_modifications:
-        feedback_str = "\n".join([f"- {mod}" for mod in user_modifications])
-        pipeline_context += f"--- 1b. User Modifications & Feedback ---\n{feedback_str}\n\n"
-    pipeline_context += f"--- 1c. Approved Final Requirement Summary ---\n{current_analyst_output}\n\n"
-    save_agent_artifact("requirements.txt", current_analyst_output)
+    pipeline_context += f"--- 1a. Initial Extracted Requirements ---\n{initial_analyst_output}\n\n" # Append initial requirements to global pipeline context
+    if user_modifications: # Check if there is feedback
+        feedback_str = "\n".join([f"- {mod}" for mod in user_modifications]) # Format modifications list into single bulleted text
+        pipeline_context += f"--- 1b. User Modifications & Feedback ---\n{feedback_str}\n\n" # Append modifications log to global context
+    pipeline_context += f"--- 1c. Approved Final Requirement Summary ---\n{current_analyst_output}\n\n" # Append finalized requirements to global context
+    save_agent_artifact("requirements.txt", current_analyst_output) # Save the approved requirements to disk under docs/requirements.txt
     
     # --- Agent 2: Planning Agent ---
-    print(Fore.BLUE + Style.BRIGHT + f"📋 [Agent 2/8] Planning Agent [Model: {get_model_for_agent('Planning Agent')}]" + Fore.RESET)
-    messages = [
-        ("system", (
+    print(Fore.BLUE + Style.BRIGHT + f"📋 [Agent 2/8] Planning Agent [Model: {get_model_for_agent('Planning Agent')}]" + Fore.RESET) # Print log indicator for Agent 2
+    messages = [ # Construct prompt messages for Planning Agent
+        ("system", ( # Define the instructions for the Planning Agent
             "You are an expert Planning Agent. Your job is to read the requirements summary and formulate "
             "a step-by-step development roadmap. Break development into ordered implementation tasks. "
             "Be structured and concise."
         )),
-        ("human", pipeline_context)
+        ("human", pipeline_context) # Chain the global context (which contains requirements output) as human input!
     ]
-    response = invoke_agent_with_fallback("Planning Agent", messages)
-    planner_output = response.content
-    print(Fore.LIGHTBLUE_EX + "💡 Output:" + Fore.RESET)
-    print(planner_output.strip() + "\n")
-    pipeline_context += f"--- 2. Execution Roadmap ---\n{planner_output}\n\n"
-    save_agent_artifact("planning.txt", planner_output)
+    response = invoke_agent_with_fallback("Planning Agent", messages) # Invoke the Planning Agent model with fallback
+    planner_output = response.content # Extract planning text response
+    print(Fore.LIGHTBLUE_EX + "💡 Output:" + Fore.RESET) # Print output header
+    print(planner_output.strip() + "\n") # Display the execution roadmap to console
+    pipeline_context += f"--- 2. Execution Roadmap ---\n{planner_output}\n\n" # Append planning output to global pipeline context!
+    save_agent_artifact("planning.txt", planner_output) # Save planning result to docs/planning.txt
     
     # --- Agent 3: System Architect Agent ---
-    print(Fore.CYAN + Style.BRIGHT + f"📐 [Agent 3/8] System Architect [Model: {get_model_for_agent('System Architect')}]" + Fore.RESET)
-    messages = [
-        ("system", (
+    print(Fore.CYAN + Style.BRIGHT + f"📐 [Agent 3/8] System Architect [Model: {get_model_for_agent('System Architect')}]" + Fore.RESET) # Print log indicator for Agent 3
+    messages = [ # Construct message block for Architect Agent
+        ("system", ( # Instructions for System Architect
             "You are an expert System Architect Agent. Your job is to decide the architecture. "
             "Define the technologies, APIs, backend server framework, module structure, and file layouts. "
             "Do not write actual source code."
         )),
-        ("human", pipeline_context)
+        ("human", pipeline_context) # Chain the global context (containing requirements AND roadmap outputs) as human input!
     ]
-    response = invoke_agent_with_fallback("System Architect", messages)
-    architect_output = response.content
-    print(Fore.LIGHTCYAN_EX + "💡 Output:" + Fore.RESET)
-    print(architect_output.strip() + "\n")
-    pipeline_context += f"--- 3. System Architecture ---\n{architect_output}\n\n"
-    save_agent_artifact("architecture.txt", architect_output)
+    response = invoke_agent_with_fallback("System Architect", messages) # Invoke the System Architect model with fallback
+    architect_output = response.content # Extract architectural text response
+    print(Fore.LIGHTCYAN_EX + "💡 Output:" + Fore.RESET) # Print output header
+    print(architect_output.strip() + "\n") # Display architecture details on console
+    pipeline_context += f"--- 3. System Architecture ---\n{architect_output}\n\n" # Append architecture design to global pipeline context!
+    save_agent_artifact("architecture.txt", architect_output) # Save system architecture result to docs/architecture.txt
     
     # --- Agent 4: Frontend Developer Agent ---
-    print(Fore.MAGENTA + Style.BRIGHT + f"🎨 [Agent 4/8] Frontend Developer [Model: {get_model_for_agent('Frontend Developer')}]" + Fore.RESET)
-    fe_attempts = 0
-    max_fe_attempts = 3
-    fe_output = ""
+    print(Fore.MAGENTA + Style.BRIGHT + f"🎨 [Agent 4/8] Frontend Developer [Model: {get_model_for_agent('Frontend Developer')}]" + Fore.RESET) # Print message starting Agent 4 execution
+    fe_attempts = 0 # Initialize current code generation attempt counter for Frontend Developer to zero
+    max_fe_attempts = 3 # Define the maximum code generation verification attempts allowed
+    fe_output = "" # Initialize empty string variable to store frontend compilation summary output
     
-    while fe_attempts < max_fe_attempts:
-        fe_attempts += 1
-        fe_scratchpad = []
+    while fe_attempts < max_fe_attempts: # Start verification loop for compiling frontend code
+        fe_attempts += 1 # Increment current code generation verification attempt by one
+        fe_scratchpad = [] # Initialize empty list to store intermediate cycle history messages
         
-        for cycle in range(1, 15):
-            fe_messages = [
-                ("system", (
+        for cycle in range(1, 15): # Start loop running up to 15 autonomous developer execution cycles
+            fe_messages = [ # Construct prompt messages with history scratchpad for this cycle
+                ("system", ( # Instructions for Frontend Developer Agent
                     "You are an expert Frontend Developer Agent. Your job is to implement the user interface, pages, components, "
                     "and visual interactions. You MUST physically write the frontend files to the disk. Do NOT just explain them.\n\n"
                     "Based on the System Architecture design provided in the conversation, implement all required HTML templates, stylesheets, and client-side scripts. "
@@ -1007,58 +1007,58 @@ def run_agent_cycles(user_input: str, chat_history: list) -> str:
                     "Call the `write_file` tool for ONE file, then end your turn. You will be prompted again to write the next file.\n"
                     "When you have finished writing ALL frontend code, output a summary of what you built without any tool calls."
                 )),
-                ("human", pipeline_context),
-                *fe_scratchpad
+                ("human", pipeline_context), # Pass current pipeline context containing requirements and designs
+                *fe_scratchpad # Unpack the cycle history messages to form the conversational memory
             ]
-            response = invoke_agent_with_fallback("Frontend Developer", fe_messages, tools=tools)
-            content = response.content
-            tool_calls = getattr(response, "tool_calls", [])
+            response = invoke_agent_with_fallback("Frontend Developer", fe_messages, tools=tools) # Invoke LLM configured for Frontend Developer Agent with fallbacks
+            content = response.content # Store response message content generated by the agent
+            tool_calls = getattr(response, "tool_calls", []) # Retrieve LangChain tool calls from response
             
             # Fallback JSON and code block parsing
-            if not tool_calls:
-                tool_calls = parse_agent_response(content, cycle, "fe")
+            if not tool_calls: # If no native tool calls were returned by the LLM
+                tool_calls = parse_agent_response(content, cycle, "fe") # Extract tool calls using custom regex/markdown parsers
                     
-            thought = content.strip()
-            if thought.startswith("{") and thought.endswith("}"):
-                thought = "I will write the frontend files to the workspace."
+            thought = content.strip() # Strip surrounding whitespace from generated agent content
+            if thought.startswith("{") and thought.endswith("}"): # If output is pure JSON
+                thought = "I will write the frontend files to the workspace." # Substitute JSON text with a friendly log message
                 
-            print(Fore.LIGHTMAGENTA_EX + f"   [Cycle {cycle}/15] 💡 Thought:" + Fore.RESET)
-            print("   " + thought.replace("\n", "\n   ") + "\n")
+            print(Fore.LIGHTMAGENTA_EX + f"   [Cycle {cycle}/15] 💡 Thought:" + Fore.RESET) # Print loop cycle indicators in light magenta color
+            print("   " + thought.replace("\n", "\n   ") + "\n") # Print agent thought steps to standard console
             
-            if not tool_calls:
-                fe_output = content
-                if "finished" in content.lower() or "complete" in content.lower():
-                    break
-                fallback_msg = "Please call the `write_file` tool to generate the next file, or state 'I am finished' if all files are complete."
-                print(Fore.YELLOW + "   [System] " + fallback_msg + Fore.RESET + "\n")
-                fe_scratchpad.append(AIMessage(content=content))
-                fe_scratchpad.append(HumanMessage(content=fallback_msg))
-                continue
+            if not tool_calls: # If no tool call actions are remaining
+                fe_output = content # Save content as the agent's final text summary report
+                if "finished" in content.lower() or "complete" in content.lower(): # Check if agent declared completion
+                    break # Exit the execution cycle loop
+                fallback_msg = "Please call the `write_file` tool to generate the next file, or state 'I am finished' if all files are complete." # Define system instruction
+                print(Fore.YELLOW + "   [System] " + fallback_msg + Fore.RESET + "\n") # Print system instruction in yellow
+                fe_scratchpad.append(AIMessage(content=content)) # Store agent's content in conversational cycle memory
+                fe_scratchpad.append(HumanMessage(content=fallback_msg)) # Store system instruction in conversational cycle memory
+                continue # Skip remaining iteration steps to run next developer cycle
                 
-            for tc in tool_calls:
-                tool_name = tc["name"]
-                tool_args = tc["args"]
-                print(Fore.MAGENTA + f"   🛠 Action:" + Fore.RESET)
-                print(f"   Calling tool '{tool_name}' with parameters: {tool_args}\n")
+            for tc in tool_calls: # Loop through every parsed tool call action
+                tool_name = tc["name"] # Store the target tool name
+                tool_args = tc["args"] # Store the dictionary of arguments
+                print(Fore.MAGENTA + f"   🛠 Action:" + Fore.RESET) # Print action header in magenta color
+                print(f"   Calling tool '{tool_name}' with parameters: {tool_args}\n") # Log specific tool parameters to console
                 
-                target_tool = None
-                for t in tools:
-                    if t.name == tool_name:
-                        target_tool = t
-                        break
-                if target_tool:
-                    try:
-                        observation = target_tool.invoke(tool_args)
-                    except Exception as e:
-                        observation = f"Error executing tool: {str(e)}"
-                else:
-                    observation = f"Error: Tool '{tool_name}' is not registered."
+                target_tool = None # Initialize target tool runner reference as None
+                for t in tools: # Look up the registered tools list
+                    if t.name == tool_name: # Check if tool name matches
+                        target_tool = t # Set reference to matching tool runner
+                        break # Stop lookup loop
+                if target_tool: # If a matching tool runner was found
+                    try: # Start try block for tool execution
+                        observation = target_tool.invoke(tool_args) # Execute the tool invoke function with the arguments
+                    except Exception as e: # Catch any tool runtime exception
+                        observation = f"Error executing tool: {str(e)}" # Format error message as observation
+                else: # If tool name is not registered
+                    observation = f"Error: Tool '{tool_name}' is not registered." # Define warning string
                     
-                print(Fore.GREEN + f"   📥 Observation:" + Fore.RESET)
-                print("   " + observation.strip().replace("\n", "\n   ") + "\n")
+                print(Fore.GREEN + f"   📥 Observation:" + Fore.RESET) # Print log header for tool observation in green
+                print("   " + observation.strip().replace("\n", "\n   ") + "\n") # Display the output returned by the tool execution
                 
-                fe_scratchpad.append(AIMessage(content=content, tool_calls=[tc]))
-                fe_scratchpad.append(ToolMessage(content=observation, tool_call_id=tc.get("id", "fallback_id_fe_" + str(cycle))))
+                fe_scratchpad.append(AIMessage(content=content, tool_calls=[tc])) # Save tool execution details to cycle memory
+                fe_scratchpad.append(ToolMessage(content=observation, tool_call_id=tc.get("id", "fallback_id_fe_" + str(cycle)))) # Save output observation to cycle memory
         
         # Post-agent verification step
         missing_fe = verify_frontend_files()

@@ -1,0 +1,101 @@
+================================================================================
+🎓 PROJECT DEMO CHEAT SHEET: AUTONOMOUS AGENTIC SDLC FRAMEWORK
+================================================================================
+
+This cheat sheet compiles the exact questions your mentor ("Sir") might ask during your project demo, how to answer them in simple terms, and where to point in the code (agent.py) to show him.
+
+--------------------------------------------------------------------------------
+QUESTION 1: "How did you create the agents?"
+--------------------------------------------------------------------------------
+★ Easy Explanation:
+  In our code, agents are created by combining (1) a ChatPromptTemplate that acts as
+  their "job description", (2) a LangChain chat model wrapper (like ChatOllama or ChatGroq),
+  and (3) direct filesystem Tools (like read_file and write_file) attached to the model.
+
+★ Code to Show:
+  - Global Prompt Layout: Line 817 (prompt = ChatPromptTemplate.from_messages)
+    Shows the system role prompt, chat history placeholder, and agent scratchpad.
+  - Creating LLM Client and Binding Tools: Lines 743 - 748 (inside invoke_agent_with_fallback)
+    Code:
+      client = create_llm_client(provider)
+      if tools:
+          client = client.bind_tools(tools)
+
+--------------------------------------------------------------------------------
+QUESTION 2: "How do these agents work in a loop?" (The ReAct Loop)
+--------------------------------------------------------------------------------
+★ Easy Explanation:
+  The agents run in a cycle loop (up to 15 times). On each turn, the agent:
+  1. Thinks about what needs to be done.
+  2. If it decides it needs to edit a file, it calls the "write_file" tool.
+  3. Our Python script runs the tool locally, gets the success result (observation),
+     and appends it back to the agent's memory (scratchpad).
+  4. The agent repeats this until it decides the files are complete, then it finishes.
+
+★ Code to Show:
+  - The Loop Statement: Line 998 (for cycle in range(1, 15):)
+  - Tool Invocation Code: Line 1048 (observation = target_tool.invoke(tool_args))
+  - Appending Tool Results to Memory: Lines 1060 - 1061
+    Code:
+      fe_scratchpad.append(AIMessage(content=content, tool_calls=[tc]))
+      fe_scratchpad.append(ToolMessage(content=observation, tool_call_id=tc.get("id")))
+
+--------------------------------------------------------------------------------
+QUESTION 3: "How does the output of one agent become the input of the next?"
+--------------------------------------------------------------------------------
+★ Easy Explanation:
+  We use a plain text string accumulator variable called "pipeline_context".
+  As each agent finishes, its output report is added directly to "pipeline_context".
+  This string is then passed as the "human" input message to the next agent in the sequence.
+
+★ Code to Show:
+  - Initial Variable Creation: Lines 869 - 873 (pipeline_context = ...)
+  - Analyst Appends Output: Line 951 (pipeline_context += f"--- 1c. Approved Final Requirement Summary ---\n{current_analyst_output}\n\n")
+  - Planning Agent Reads Context: Line 962 (("human", pipeline_context))
+  - Planning Agent Appends Output: Line 968 (pipeline_context += f"--- 2. Execution Roadmap ---\n{planner_output}\n\n")
+  - System Architect Reads Context: Line 979 (("human", pipeline_context))
+  - System Architect Appends Output: Line 985 (pipeline_context += f"--- 3. System Architecture ---\n{architect_output}\n\n")
+
+--------------------------------------------------------------------------------
+QUESTION 4: "How do agents change LLMs dynamically?"
+--------------------------------------------------------------------------------
+★ Easy Explanation:
+  We have a model mapping dictionary (AGENT_LLM_CONFIG) that maps each agent name
+  to a provider. A factory function (create_llm_client) reads this mapping and
+  initializes the correct LangChain model wrapper (Ollama, Groq, or Gemini) dynamically.
+
+★ Code to Show:
+  - Agent-to-Model Mapping: Line 620 (AGENT_LLM_CONFIG = { ... })
+  - Client Factory Function: Line 651 (def create_llm_client(provider: str):)
+
+--------------------------------------------------------------------------------
+QUESTION 5: "How does the fallback system work when a model fails?"
+--------------------------------------------------------------------------------
+★ Easy Explanation:
+  When invoking the AI, we use a try-except loop. If the active model raises an error
+  (e.g., API limit, credit limit, or timeout), our code catches the exception and
+  automatically switches the provider name to the next backup model listed in our
+  "fallback_ladder" list, then retries.
+
+★ Code to Show:
+  - Fallback Ladder List: Line 737 (fallback_ladder = ["Gemini", "Groq", "Ollama_7b", "Ollama_1.5b"])
+  - Auto-Fallback Switching: Lines 773 - 779 (inside invoke_agent_with_fallback)
+    Code:
+      current_idx = fallback_ladder.index(provider)
+      provider = fallback_ladder[current_idx + 1]
+      continue
+
+--------------------------------------------------------------------------------
+QUESTION 6: "What local tools are registered with the AI?"
+--------------------------------------------------------------------------------
+★ Easy Explanation:
+  We register filesystem tools so the AI can list, read, and write files locally.
+  These are standard Python functions decorated with LangChain's `@tool` decorator.
+
+★ Code to Show:
+  - list_files tool definition: Line 471 (def list_files() -> str:)
+  - read_file tool definition: Line 511 (def read_file(filename: str) -> str:)
+  - write_file tool definition: Line 547 (def write_file(filename: str, content: str) -> str:)
+  - Git Repo Initialization: Line 71 (def initialize_git_repo():)
+  - Automatic Git Committing: Line 97 (def handle_git_push_workflow(project_name: str):)
+================================================================================
