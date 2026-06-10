@@ -623,13 +623,13 @@ AGENT_LLM_CONFIG = {
     "Requirement Analyst": "Gemini",
     "Planning Agent": "Groq",
     "System Architect": "Gemini",
-    "Frontend Developer": "Groq",
-    "Backend Developer": "Groq",
-    "Integration Agent": "Groq",
-    "QA Tester": "Groq",
+    "Frontend Developer": "Gemini",
+    "Backend Developer": "Gemini",
+    "Integration Agent": "Gemini",
+    "QA Tester": "Gemini",
     "Software Verifier": "Groq",
     "Troubleshooter Agent": "Gemini",
-    "Maintenance Developer": "Groq",
+    "Maintenance Developer": "Gemini",
     "Maintenance QA": "Groq"
 }
 
@@ -790,8 +790,13 @@ def invoke_agent_with_fallback(agent_name: str, messages: list, tools: list = No
             
             if retries_for_current_provider < max_retries: # Check if the current provider's retry count is below the maximum limit
                 retries_for_current_provider += 1 # Increment the current provider's retry count by one
-                print(Fore.YELLOW + f"   [Auto-Recovery] Retrying provider '{provider}' in 5 seconds (Attempt {retries_for_current_provider}/{max_retries})..." + Fore.RESET) # Print a retry countdown warning in yellow
-                time.sleep(5) # Pause execution for 5 seconds before retrying
+                is_rate_limit = "429" in err_msg or "resource_exhausted" in err_msg.lower() or "rate limit" in err_msg.lower()
+                sleep_time = 30 if is_rate_limit else 5
+                if is_rate_limit:
+                    print(Fore.YELLOW + f"   [Auto-Recovery] Rate limit (429) hit. Waiting {sleep_time} seconds for the quota window to reset (Attempt {retries_for_current_provider}/{max_retries})..." + Fore.RESET)
+                else:
+                    print(Fore.YELLOW + f"   [Auto-Recovery] Retrying provider '{provider}' in 5 seconds (Attempt {retries_for_current_provider}/{max_retries})..." + Fore.RESET)
+                time.sleep(sleep_time) # Pause execution to allow recovery
                 continue # Restart the loop iteration to retry the current provider
                 
             # If we exhaust retries, move to next provider in the ladder
