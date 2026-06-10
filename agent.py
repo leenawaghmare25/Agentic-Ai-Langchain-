@@ -1,7 +1,9 @@
 # Import the os module to handle file directories and environment variables
 import os
 from dotenv import load_dotenv
-load_dotenv()
+# Load .env using absolute path relative to the script directory
+script_dir = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(dotenv_path=os.path.join(script_dir, ".env"))
 # Import the sys module to detect the operating system and configure terminal streams
 import sys
 # Import the json module to parse tool calls
@@ -618,17 +620,17 @@ def search_internet(query: str) -> str:
 
 # Configure the default provider for each agent (choose: "Ollama", "Groq", or "Gemini")
 AGENT_LLM_CONFIG = {
-    "Requirement Analyst": "Groq",
+    "Requirement Analyst": "Gemini",
     "Planning Agent": "Groq",
-    "System Architect": "Groq",
-    "Frontend Developer": "Ollama_7b",
-    "Backend Developer": "Ollama_7b",
-    "Integration Agent": "Ollama_7b",
-    "QA Tester": "Ollama_7b",
-    "Software Verifier": "Ollama_7b",
-    "Troubleshooter Agent": "Groq",
-    "Maintenance Developer": "Ollama_7b",
-    "Maintenance QA": "Ollama_7b"
+    "System Architect": "Gemini",
+    "Frontend Developer": "Groq",
+    "Backend Developer": "Groq",
+    "Integration Agent": "Groq",
+    "QA Tester": "Groq",
+    "Software Verifier": "Groq",
+    "Troubleshooter Agent": "Gemini",
+    "Maintenance Developer": "Groq",
+    "Maintenance QA": "Groq"
 }
 
 def get_model_for_agent(agent_name: str) -> str: # Define a helper function to get the model details for a specific agent name
@@ -731,13 +733,13 @@ def invoke_agent_with_fallback(agent_name: str, messages: list, tools: list = No
     """Invokes the assigned LLM for an agent, catching rate limits/errors with an automated fallback ladder."""
     provider = AGENT_LLM_CONFIG.get(agent_name, "Ollama") # Retrieve the configured LLM provider for the agent, defaulting to "Ollama"
     
-    if OFFLINE_MODE and provider.lower().strip() not in ["ollama_1.5b", "ollama", "ollama_7b"]: # Check if offline mode is active and if the provider is not a local Ollama model
-        print(Fore.YELLOW + f"   [Offline Mode] Forcing '{agent_name}' to Local Qwen 7B." + Fore.RESET) # Print a warning to the console that the agent is being forced to local Qwen 7B
-        provider = "Ollama_7b" # Override the provider setting to "Ollama_7b"
+    if OFFLINE_MODE and provider.lower().strip() not in ["ollama_1.5b", "ollama"]: # Check if offline mode is active and if the provider is not a local Ollama model
+        print(Fore.YELLOW + f"   [Offline Mode] Forcing '{agent_name}' to Local Qwen 1.5B." + Fore.RESET) # Print a warning to the console that the agent is being forced to local Qwen 1.5B
+        provider = "Ollama" # Override the provider setting to "Ollama" (Ollama maps to 1.5b client)
         
-    fallback_ladder = ["Gemini", "Groq", "Ollama_7b", "Ollama_1.5b"] # Define the ordered list of LLM providers to try in sequence when errors occur
+    fallback_ladder = ["Gemini", "Groq", "Ollama_1.5b"] # Define the ordered list of LLM providers to try in sequence when errors occur
     if OFFLINE_MODE: # Check if offline mode is active
-        fallback_ladder = ["Ollama_7b", "Ollama_1.5b"] # Restrict the fallback list to only include local Ollama models
+        fallback_ladder = ["Ollama_1.5b"] # Restrict the fallback list to only include local Ollama models
         
     retries_for_current_provider = 0 # Initialize the retry count for the active LLM provider to zero
     max_retries = 2 # Define the maximum number of retry attempts allowed per provider
