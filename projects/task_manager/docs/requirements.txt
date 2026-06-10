@@ -1,0 +1,29 @@
+**Detected Requirements**
+
+1. **Single-page application**: The application should be a single-page web application that loads all necessary data and functionality on initial load.
+2. **Dark mode**: The application should have a dark mode theme.
+3. **Task management**: The application should allow users to manage tasks, including creating, reading, updating, and deleting tasks.
+4. **Task priority**: Tasks should have a priority level (High, Medium, Low) that affects their visual representation.
+5. **Task completion**: Tasks should have a completion status that can be toggled by the user.
+6. **Glassmorphism cards**: Tasks should be displayed in glassmorphism cards with a glow effect based on their priority level.
+7. **SQLite database**: The application should use an SQLite database to store tasks.
+8. **Backend logic**: All backend logic should be contained in a single file, `app.py`.
+
+**Assumed Defaults**
+
+1. **Flask framework**: The application will use the Flask web framework.
+2. **SQLite database library**: The application will use the `sqlite3` library to interact with the SQLite database.
+3. **Glassmorphism card library**: The application will use a library such as `materialize` or `tailwindcss` to implement glassmorphism cards.
+4. **Dark mode theme**: The application will use a dark mode theme with a black background and white text.
+
+**Suggested Improvements**
+
+1. **User authentication**: The application should implement user authentication to allow multiple users to manage their own tasks.
+2. **Task categorization**: The application should allow users to categorize tasks to make them easier to manage.
+3. **Task due dates**: The application should allow users to set due dates for tasks to help them stay organized.
+4. **Task reminders**: The application should send reminders to users when tasks are due.
+
+**Clarification Questions**
+
+1. What is the expected behavior when a user completes a task? Should the task be removed from the list, or should it be marked as completed but still visible?
+2. Are there any specific requirements for the glassmorphism card design, such as a specific glow color or effect?

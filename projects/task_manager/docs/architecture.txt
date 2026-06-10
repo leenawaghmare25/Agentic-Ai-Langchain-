@@ -1,0 +1,80 @@
+**System Architecture**
+
+Based on the provided requirements, I will outline a system architecture that meets the needs of the application.
+
+### Technologies
+
+* Frontend: Single-page web application built using HTML5, CSS3, and JavaScript (with a library such as React or Angular)
+* Backend: Flask web framework with SQLite database
+* Database: SQLite database for storing tasks
+* Glassmorphism card library: Materialize or TailwindCSS
+* Dark mode theme: Custom implementation using CSS
+
+### APIs
+
+* RESTful API for interacting with the backend logic (e.g., creating, reading, updating, and deleting tasks)
+* API endpoints:
+	+ `GET /tasks`: Retrieve all tasks
+	+ `POST /tasks`: Create a new task
+	+ `PUT /tasks/{id}`: Update an existing task
+	+ `DELETE /tasks/{id}`: Delete a task
+
+### Backend Server Framework
+
+* Flask web framework (version 2.x)
+* SQLite database library: `sqlite3` (version 3.x)
+
+### Module Structure
+
+* `app.py`: Backend logic file containing Flask app instance and API endpoints
+* `models.py`: Database models for tasks (e.g., Task class)
+* `schemas.py`: JSON schema definitions for API responses
+* `utils.py`: Utility functions for tasks (e.g., task completion logic)
+
+### File Layout
+
+* `app/`: Backend logic directory
+	+ `__init__.py`: Flask app instance
+	+ `app.py`: Backend logic file
+	+ `models.py`: Database models
+	+ `schemas.py`: JSON schema definitions
+	+ `utils.py`: Utility functions
+* `static/`: Static files directory (e.g., CSS, JavaScript, images)
+* `templates/`: HTML templates directory
+* `requirements.txt`: Dependencies file
+
+### Glassmorphism Card Design
+
+* Glow color: Customizable using CSS variables (e.g., `--glow-color`)
+* Glow effect: Materialize or TailwindCSS library will provide the necessary CSS classes for the glassmorphism effect
+
+### Dark Mode Theme
+
+* Custom implementation using CSS variables (e.g., `--background-color`, `--text-color`)
+* Dark mode theme will be applied to the entire application, including glassmorphism cards
+
+### User Authentication
+
+* Implement user authentication using a library such as Flask-Login or Flask-Security
+* Store user credentials in a secure manner (e.g., hashed passwords)
+
+### Task Categorization
+
+* Implement task categorization using a library such as Flask-SQLAlchemy or SQLAlchemy
+* Store task categories in the database
+
+### Task Due Dates and Reminders
+
+* Implement task due dates using a library such as Flask-SQLAlchemy or SQLAlchemy
+* Store task due dates in the database
+* Implement reminders using a scheduling library such as APScheduler or Celery
+
+### Task Completion Behavior
+
+* When a user completes a task, the task will be marked as completed but still visible in the list
+* The task will not be removed from the list, but its completion status will be updated in the database
+
+### Clarification Questions
+
+* The expected behavior when a user completes a task is to mark the task as completed but still visible in the list.
+* There are no specific requirements for the glassmorphism card design, but a custom glow color and effect can be implemented using CSS variables and Materialize or TailwindCSS library.

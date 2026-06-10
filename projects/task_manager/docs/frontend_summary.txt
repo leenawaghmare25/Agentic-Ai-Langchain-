@@ -1,0 +1,11 @@
+**Summary of Built Frontend Code:**
+
+* A single-page web application with a dark mode theme
+* A base HTML template (`base.html`) that serves as the foundation for all pages
+* A CSS stylesheet (`style.css`) that defines the visual styles for the application, including the glassmorphism card design and dark mode theme
+* A JavaScript file (`script.js`) that contains the client-side logic for the application, including task animation, task completion toggling, and adding new tasks
+* A glassmorphism card design that uses CSS variables to customize the glow color and effect
+* A dark mode theme that uses CSS variables to customize the background color and text color
+* A task management system that allows users to create, read, update, and delete tasks
+* A task completion system that allows users to mark tasks as completed or not completed
+* A new task addition system that allows users to add new tasks with a prompt for task name and priority

@@ -1,0 +1,297 @@
+/* Stylesheet for Task Manager Sandbox */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+    --bg-color: #0d0d12;
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --accent: #6366f1;
+    --accent-glow: rgba(99, 102, 241, 0.3);
+    
+    /* Priority Colors */
+    --priority-high: #ef4444;
+    --priority-high-glow: rgba(239, 68, 68, 0.25);
+    --priority-medium: #eab308;
+    --priority-medium-glow: rgba(234, 179, 8, 0.25);
+    --priority-low: #3b82f6;
+    --priority-low-glow: rgba(59, 130, 246, 0.25);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Background Glowing Mesh */
+.background-mesh {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(239, 68, 68, 0.05) 0%, transparent 40%);
+    z-index: -1;
+}
+
+.container {
+    width: 100%;
+    max-width: 650px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+header {
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+}
+
+header p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+/* Glassmorphism Card styling */
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 26px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+.form-section h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #e5e7eb;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+textarea {
+    resize: none;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.25);
+    transition: all 0.2s;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+    transform: translateY(-1px);
+}
+
+/* Task list styles */
+.task-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.task-list-header h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+#task-count {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.task-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Dynamic Priority Glow Cards */
+.task-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.task-card.high {
+    border-left: 4px solid var(--priority-high);
+    box-shadow: 0 4px 20px var(--priority-high-glow);
+}
+
+.task-card.medium {
+    border-left: 4px solid var(--priority-medium);
+    box-shadow: 0 4px 20px var(--priority-medium-glow);
+}
+
+.task-card.low {
+    border-left: 4px solid var(--priority-low);
+    box-shadow: 0 4px 20px var(--priority-low-glow);
+}
+
+.task-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.task-info h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #f3f4f6;
+    transition: color 0.2s;
+}
+
+.task-card.completed .task-info h3 {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+}
+
+.task-info p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.task-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Custom Checkbox */
+.checkbox-container {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-container input {
+    display: none;
+}
+
+.checkmark {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.checkbox-container:hover .checkmark {
+    border-color: var(--accent);
+}
+
+.checkbox-container input:checked + .checkmark {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.checkmark i {
+    color: #fff;
+    font-size: 0.75rem;
+    display: none;
+}
+
+.checkbox-container input:checked + .checkmark i {
+    display: block;
+}
+
+/* Delete Button */
+.delete-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1.05rem;
+    padding: 6px;
+    width: auto;
+    box-shadow: none;
+    margin-bottom: 0;
+    transition: color 0.2s, transform 0.1s;
+}
+
+.delete-btn:hover {
+    color: var(--priority-high);
+    background: none;
+    box-shadow: none;
+    transform: scale(1.1);
+}

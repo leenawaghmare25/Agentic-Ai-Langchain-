@@ -1,0 +1,89 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 1em;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav li {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2em;
+}
+
+section {
+    background-color: #fff;
+    padding: 1em;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 1em;
+}
+
+.glassmorphism-card {
+    background-color: #fff;
+    padding: 1em;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.glassmorphism-card:hover {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.glassmorphism-card .title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.glassmorphism-card .description {
+    font-size: 14px;
+    color: #666;
+}
+
+.glassmorphism-card .priority {
+    font-size: 14px;
+    color: #999;
+}
+
+.glassmorphism-card .completed {
+    font-size: 14px;
+    color: #666;
+}
+
+.glassmorphism-card .delete {
+    font-size: 14px;
+    color: #999;
+}
+
+.glassmorphism-card .edit {
+    font-size: 14px;
+    color: #666;
+}

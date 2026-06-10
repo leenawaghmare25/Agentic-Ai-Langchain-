@@ -623,13 +623,13 @@ AGENT_LLM_CONFIG = {
     "Requirement Analyst": "Gemini",
     "Planning Agent": "Groq",
     "System Architect": "Gemini",
-    "Frontend Developer": "Gemini",
-    "Backend Developer": "Gemini",
-    "Integration Agent": "Gemini",
-    "QA Tester": "Gemini",
+    "Frontend Developer": "Groq",
+    "Backend Developer": "Groq",
+    "Integration Agent": "Groq",
+    "QA Tester": "Groq",
     "Software Verifier": "Groq",
     "Troubleshooter Agent": "Gemini",
-    "Maintenance Developer": "Gemini",
+    "Maintenance Developer": "Groq",
     "Maintenance QA": "Groq"
 }
 
@@ -729,6 +729,39 @@ def parse_failed_generation(failed_gen: str) -> dict:
         pass
     return None
 
+def get_compact_context(context_str: str) -> str:
+    """Extracts only the critical sections from pipeline_context to keep it under Groq's token limits."""
+    sections_to_keep = []
+    
+    # 1. Look for approved requirements
+    req_match = re.search(r'(--- 1c\. Approved Final Requirement Summary ---[\s\S]*?)(?=--- \d|\Z)', context_str)
+    if req_match:
+        sections_to_keep.append(req_match.group(1).strip())
+    else:
+        req_match_init = re.search(r'(--- 1a\. Initial Extracted Requirements ---[\s\S]*?)(?=--- \d|\Z)', context_str)
+        if req_match_init:
+            sections_to_keep.append(req_match_init.group(1).strip())
+            
+    # 2. Look for System Architecture
+    arch_match = re.search(r'(--- 3\. System Architecture ---[\s\S]*?)(?=--- \d|\Z)', context_str)
+    if arch_match:
+        sections_to_keep.append(arch_match.group(1).strip())
+        
+    # 3. Look for Frontend Implementation (for backend/integration steps)
+    fe_match = re.search(r'(--- 4\. Frontend Implementation ---[\s\S]*?)(?=--- \d|\Z)', context_str)
+    if fe_match:
+        sections_to_keep.append(fe_match.group(1).strip())
+        
+    # 4. Look for Backend Implementation (for integration steps)
+    be_match = re.search(r'(--- 5\. Backend Implementation ---[\s\S]*?)(?=--- \d|\Z)', context_str)
+    if be_match:
+        sections_to_keep.append(be_match.group(1).strip())
+        
+    if not sections_to_keep:
+        return context_str
+        
+    return "\n\n".join(sections_to_keep)
+
 def invoke_agent_with_fallback(agent_name: str, messages: list, tools: list = None): # Define function invoke_agent_with_fallback that takes agent_name, messages, and optional tools list
     """Invokes the assigned LLM for an agent, catching rate limits/errors with an automated fallback ladder."""
     provider = AGENT_LLM_CONFIG.get(agent_name, "Ollama") # Retrieve the configured LLM provider for the agent, defaulting to "Ollama"
@@ -747,12 +780,30 @@ def invoke_agent_with_fallback(agent_name: str, messages: list, tools: list = No
     while True: # Start an infinite loop to handle LLM invocation and catch exceptions
         try: # Start a try block to attempt LLM call
             print(Fore.WHITE + Style.DIM + f"   [LLM Provider: {provider}]" + Fore.RESET) # Print the active LLM provider to the console in dim white color
+            
+            # Intercept and compact context if using Groq
+            messages_to_use = messages
+            if provider.lower().strip() == "groq":
+                compacted_messages = []
+                for msg in messages:
+                    if isinstance(msg, tuple) and len(msg) == 2:
+                        role, content = msg
+                        if role == "human" and len(content) > 2000:
+                            content = get_compact_context(content)
+                        compacted_messages.append((role, content))
+                    elif isinstance(msg, HumanMessage) and len(msg.content) > 2000:
+                        msg_copy = HumanMessage(content=get_compact_context(msg.content))
+                        compacted_messages.append(msg_copy)
+                    else:
+                        compacted_messages.append(msg)
+                messages_to_use = compacted_messages
+            
             client = create_llm_client(provider) # Create the LangChain LLM client using the current provider name
             if tools: # Check if a list of tools was passed to the function
                 client = client.bind_tools(tools) # Bind the list of tools to the LLM client so it can perform function calling
             
             # Perform invocation
-            return client.invoke(messages) # Invoke the LLM client with the conversation messages and return the result
+            return client.invoke(messages_to_use) # Invoke the LLM client with the conversation messages and return the result
             
         except Exception as e: # Catch any exception raised during model invocation
             err_msg = str(e) # Convert the exception object to a string representation
